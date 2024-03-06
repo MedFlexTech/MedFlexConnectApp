@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:41623881552:android:f4e433c2a2b0b47a074e55",
+        "mobilesdk_app_id": "1:41623881552:android:f83db234a1f2c00a074e55",
         "android_client_info": {
-          "package_name": "medflex.connect.app"
+          "package_name": "com.medflexconnectapp"
         }
       },
       "oauth_client": [],
