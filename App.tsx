@@ -1,118 +1,101 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, { useState, useEffect } from 'react';
+import { SafeAreaView, ScrollView, StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Colors } from 'react-native/Libraries/NewAppScreen';
+import auth from '@react-native-firebase/auth';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import { RouteProp } from '@react-navigation/native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import HomeScreen from "./frontend/screens/HomeScreen.js";
+import ProfileScreen from "./frontend/screens/ProfileScreen.js";
+import HelpScreen from "./frontend/screens/HelpScreen.js";
+import StartTreatmentScreen from './frontend/screens/StartTreatmentScreen.js';
+import CalendarScreen from './frontend/screens/CalendarScreen.js';
+import JournalScreen from './frontend/screens/JournalScreen.js';
+import HistoryScreen from './frontend/screens/HistoryScreen.js';
+import LoginScreen from './frontend/screens/LoginScreen.js';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+// Tab Bottom
+const Tab = createBottomTabNavigator();
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const HomeStack = createNativeStackNavigator();
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+function HomeStackGroup(){
+  return(
+      <HomeStack.Navigator
+          screenOptions={{headerShown: false}}>
+          <HomeStack.Screen name="Home" component={HomeScreen}/>
+          <HomeStack.Screen name="StartTreatment" component={StartTreatmentScreen}/>
+          <HomeStack.Screen name="Calendar" component={CalendarScreen}/>
+          <HomeStack.Screen name="Journal" component={JournalScreen}/>
+          <HomeStack.Screen name="History" component={HistoryScreen}/>
+      </HomeStack.Navigator>
+  )
+}
+
+function TabGroup(){
+  return(
+      <Tab.Navigator initialRouteName='HomeStackGroup'
+      screenOptions={({ route }: { route: RouteProp<Record<string, object | undefined>, string> }) => ({
+        tabBarIcon: ({ color, focused, size }: { color: string; focused: boolean; size: number }) => {
+                let iconName;
+                if(route.name === "Profile"){
+                  iconName = focused ? 'person' : 'person-outline';
+                } else if(route.name === "HomeStackGroup"){
+                  iconName = focused ? 'home' : 'home-outline';
+                } else if(route.name === "Help"){
+                  iconName = focused ? 'help-circle' : 'help-circle-outline';
+                }
+                  return <Ionicons name={iconName} size={size} color={color}/>;
+              },
+              tabBarActiveTintColor: "#5A7CF6",
+              tabBarInactiveTintColor: "#9F9FA0",
+              headerShown: false
+          })}
+      >
+          <Tab.Screen name="Profile" component={ProfileScreen}/>
+          <Tab.Screen name="HomeStackGroup" component={HomeStackGroup} options={{tabBarLabel:"Home"}}/>
+          <Tab.Screen name="Help" component={HelpScreen} />
+      </Tab.Navigator>
+  )
+}
+
+function App() {
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user: any) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  useEffect(() => {
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  if (initializing) return null; // or a loading spinner, if you would like to add one
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <NavigationContainer>
+      {user ? <TabGroup /> : <LoginScreen />}
+    </NavigationContainer>
   );
 }
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 
 export default App;
+

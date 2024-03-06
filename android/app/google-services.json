@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "41623881552",
+    "project_id": "medflexconnectapp",
+    "storage_bucket": "medflexconnectapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41623881552:android:f4e433c2a2b0b47a074e55",
+        "android_client_info": {
+          "package_name": "medflex.connect.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2IK1cZo06SJstEcIySize0VhIU0v4Sr4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
