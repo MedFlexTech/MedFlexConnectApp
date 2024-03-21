@@ -22,9 +22,6 @@ class BLEService{
         })
     };
 
-     
-
-
 }
 
 export default new BLEService();

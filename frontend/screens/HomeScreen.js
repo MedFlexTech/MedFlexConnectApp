@@ -79,13 +79,13 @@ const styles = StyleSheet.create({
     },
     squiggle:{
         position: 'absolute',
+        aspectRatio: 4,
+        resizeMode: 'stretch',
         width: '100%',
-        height: '100%'
-
+        alignContent: 'center'
     },
     heading:{
-        width: '100%',
-        height: '26%'
+        marginBottom: 90,
     },
     greeting:{
         marginTop: '14%',
