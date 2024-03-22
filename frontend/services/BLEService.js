@@ -3,8 +3,12 @@ import { PermissionsAndroid } from 'react-native';
 
 class BLEService{
     constructor(){
-        this.bleManager = new BleManager();
+        this.manager = new BleManager();
         this.deviceId = null;
+    }
+
+    initializeManager() {
+        this.manager = new BleManager(); 
     }
 
     async requestPermissions(){

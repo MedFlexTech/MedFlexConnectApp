@@ -1,10 +1,20 @@
-import React from 'react';
+import React , {useState, useEffect} from 'react';
 import { Button, Text, StyleSheet, SafeAreaView, View, Pressable, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BleService from '../services/BLEService.js';
 
 function HomeScreen(props) {
     const { navigate } = useNavigation();
+    const [deviceStatus, setDeviceStatus] = useState('No device connected');
+    const [batteryStatus, setBatteryStatus] = useState('Cannot read battery percentage');
+   
+    useEffect(() => {
+        const initializeBLE = async () => {
+            BleService.initializeManager();
+        };
+
+        initializeBLE(); 
+    }, []);
 
     const getCurrentDate = () =>{
         const theMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
@@ -28,10 +38,24 @@ function HomeScreen(props) {
         }
     }
 
-    const getBattery = () => {
-        BleService.connectToDevice('DUO');
-
-        return BleService.readBattery();
+    const getBattery =  async () => {
+        let result = '';
+        try{
+            await BleService.connectToDevice('DUO');
+        }
+        catch(error){
+            console.log(error);
+            return;
+        }
+        setDeviceStatus('Connected');
+        try{
+            let battery = await BleService.readBattery();
+        }
+        catch(error){
+            console.log(error);
+            return;
+        }
+        setBatteryStatus(battery);
     }
     return (
         
@@ -44,6 +68,8 @@ function HomeScreen(props) {
            <View style={styles.statusBox}>
                 <Text>Device Status</Text>
                 {/*Determine if device is connected here*/}
+                <Text>{deviceStatus}</Text>
+                <Text>{batteryStatus}</Text>
             </View>
 
             <View>
@@ -74,15 +100,20 @@ const styles = StyleSheet.create({
     },
 
     button:{
-        alignItems: 'center',
+        alignItems: 'flex-start',
         justifyContent: 'center',
         paddingVertical: 12,
         paddingHorizontal: 32,
         borderRadius: 4,
         elevation: 3,
         backgroundColor: 'white',
-        borderColor: 'black',
-        borderWidth: 1,
+        marginHorizontal: 20,
+        marginTop: 10,
+        backgroundColor: '#fff',
+        padding: 15,
+        borderRadius: 10,
+        elevation: 3, // For Android shadow
+        shadowOpacity: 0.1, // For iOS shadow
     },
     squiggle:{
         position: 'absolute',

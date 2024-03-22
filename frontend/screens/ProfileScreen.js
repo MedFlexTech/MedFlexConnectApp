@@ -56,7 +56,7 @@ function ProfileScreen(props) {
 const styles = StyleSheet.create({
     container: {
       flex: 1,
-      backgroundColor: '#f7f7f7',
+      backgroundColor: '#FFF',
     },
     squiggle:{
         position: 'absolute',
@@ -74,16 +74,6 @@ const styles = StyleSheet.create({
         textAlign: 'left', 
         color: 'white',
         fontSize: 32,
-    },
-    header: {
-      backgroundColor: '#4B9CD3',
-      padding: 20,
-      alignItems: 'center',
-    },
-    headerTitle: {
-      color: '#fff',
-      fontSize: 24,
-      fontWeight: 'bold',
     },
     profileDetails: {
       margin: 20,
@@ -111,13 +101,15 @@ const styles = StyleSheet.create({
       backgroundColor: '#fff',
       padding: 15,
       borderRadius: 10,
-      alignItems: 'center',
+      alignItems: 'flex-start',
       elevation: 3, // For Android shadow
       shadowOpacity: 0.1, // For iOS shadow
     },
     buttonText: {
       fontSize: 18,
       fontWeight: '500',
+      color: '#5C80FC',
+      fontFamily: 'Roboto', 
     },
   });
 
