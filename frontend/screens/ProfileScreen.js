@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { SafeAreaView, Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
+import { SafeAreaView, Image, Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth, { firebase } from '@react-native-firebase/auth';
 
@@ -30,9 +30,10 @@ function ProfileScreen(props) {
 
     return (
         <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Your Profile</Text>
-      </View>
+      <View style={styles.heading}>
+                <Image source={require('../assets/Squiggles.jpg')} style={styles.squiggle}/>
+                    <Text style={styles.greeting}>Your Profile</Text>
+            </View>
       <View style={styles.profileDetails}>
         <Text style={styles.name}>{userProfile.name}</Text>
         <Text style={styles.email}>{userProfile.email}</Text>
@@ -56,6 +57,23 @@ const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: '#f7f7f7',
+    },
+    squiggle:{
+        position: 'absolute',
+        aspectRatio: 4,
+        resizeMode: 'stretch',
+        width: '100%',
+        alignContent: 'center'
+    },
+    heading:{
+        marginBottom: 90,
+    },
+    greeting:{
+        marginTop: '14%',
+        marginLeft: '6%',
+        textAlign: 'left', 
+        color: 'white',
+        fontSize: 32,
     },
     header: {
       backgroundColor: '#4B9CD3',
