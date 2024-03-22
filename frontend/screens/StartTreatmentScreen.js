@@ -7,7 +7,7 @@ import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 import { TimerProvider } from '../services/TimerContext.js';
 
 function StartTreatmentScreen(props) {
-    {/*Display and format date for the title*/}
+    /*Display and format date for the title*/
     const getCurrentDate = () =>{
         const theMonths = ["January","February","March","April","May","June","July","August","September","October","November","December"];
         let date = new Date();
@@ -17,7 +17,7 @@ function StartTreatmentScreen(props) {
         return month + " " + day + ", " + year;
     }
 
-    {/*return date for database lookup*/}
+    /*return date for database lookup*/
     const getDate = () => {
         let date = new Date();
         let month = date.getMonth() + 1;
@@ -26,25 +26,25 @@ function StartTreatmentScreen(props) {
         return month + "-" + day + "-" + year;
     }
 
-    
-    const [boneMinutes, setBoneMinutes] = useState(null);
-    const [muscleMinutes, setMuscleMinutes] = useState(null);
+    const [treatmentData, setTreatmentData] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
     const [totalMinutes, setTotalMinutes] = useState(null);
     useEffect(() => {
         const getTime = async () => {
             const userDocument = await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').where('date', '==', getDate()).limit(1).get();
-            if (!userDocument.empty) {
-                const treatmentData = userDocument.docs[0].data();
-                const boneMinutes = treatmentData.boneMinutes;
-                const muscleMinutes = treatmentData.muscleMinutes;
-                setBoneMinutes(boneMinutes);
-                setMuscleMinutes(muscleMinutes);
-                setTotalMinutes(boneMinutes + muscleMinutes);
+            
+            if (userDocument.empty) {
+                setTreatmentData(null); // Explicitly set to null for 'no treatments' case
+            } else {
+                const data = userDocument.docs[0].data();
+                setTreatmentData(data);
             }
+            setIsLoading(false); // Data fetching complete
         }
         getTime()
     }, []);
     
+    //Timer states
     const [isPlaying, setIsPlaying] = useState(false);
     const changeIsPlaying = () => {
         setIsPlaying(prev => !prev)
@@ -79,35 +79,47 @@ function StartTreatmentScreen(props) {
                     <Text style={styles.greeting}>Today's Treatment</Text>
                     <Text style={styles.date}>{getCurrentDate()}</Text>
             </View>
-            <View>
-                 {/*Timer here*/}
-              <CountdownCircleTimer
-              isPlaying = {isPlaying}
-              duration={totalMinutes * 60}
-              colors={['#004777', '#F7B801', '#A30000', '#A30000']}
-              colorsTime={[7, 5, 2, 0]}
-              updateInterval={1}
-              >
-                {({ remainingTime, color }) => (
-                    <Text>
-                        {Math.floor(remainingTime/60)}:{remainingTime % 60}
-                    </Text>
-                )}
-              </CountdownCircleTimer>
-                
-            </View>
-            <View> 
-                {/*Display treatment info here*/}
-                <Text>{boneMinutes !== null ? `${boneMinutes} Minutes Bone Growth Stimulation` : 'Fetching bone growth stimulation time...'}</Text>
-                <Text>{muscleMinutes !== null ? `${muscleMinutes} Minutes Muscle Stimulation` : 'Fetching muscle stimulation time...'}</Text>
-            </View>
-            
-            <View style={styles.centeredContainer}>
-                <Pressable style={[buttonStyle]} onPress={() => {changeIsPlaying(); handlePress()}}>
-                    <Text style={styles.text}>{buttonState}</Text>
-                </Pressable>
-            </View>
-
+            {isLoading ? (
+                <View>
+                    <Text>Fetching Treatment Details...</Text>
+                </View>
+            ) : treatmentData ? (
+                <View style={styles.centeredContainer}>
+                    <View>
+                        {/*Timer here*/}
+                        <CountdownCircleTimer
+                        isPlaying = {isPlaying}
+                        duration={totalMinutes * 60}
+                        colors={['#004777', '#F7B801', '#A30000', '#A30000']}
+                        colorsTime={[7, 5, 2, 0]}
+                        updateInterval={1}
+                        >
+                            {({ remainingTime, color }) => (
+                                <Text>
+                                    {Math.floor(remainingTime/60)}:{remainingTime % 60}
+                                </Text>
+                            )}
+                        </CountdownCircleTimer>
+                    </View>
+                    <View> 
+                        {/*Display treatment info here*/}
+                        <Text>{`${treatmentData.boneMinutes} Minutes Bone Growth Stimulation`}</Text>
+                        <Text>{`${treatmentData.muscleMinutes} Minutes Muscle Stimulation`}</Text>
+                    </View>
+                    <View style={styles.centeredContainer}>
+                        <Pressable style={[buttonStyle]} onPress={() => {changeIsPlaying(); handlePress()}}>
+                            <Text style={styles.text}>{buttonState}</Text>
+                        </Pressable>
+                    </View>
+                </View>
+            ): (
+                <View style={styles.centeredContainer}>
+                    <Text style={styles.noTreatmentsText}>No Treatments Today</Text>
+                    <Pressable style={styles.disabledButton}> 
+                        <Text style={styles.text}>Start</Text>
+                    </Pressable>
+                </View>
+            )}
         </View>
     );
 }
@@ -125,7 +137,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fff",
     },
-
     startButton:{
         justifyContent: 'center',
         alignContent: 'center',
@@ -134,6 +145,16 @@ const styles = StyleSheet.create({
         boxShadow: '0px 4px 17.5px 0px',
         width: 174,
         height: 46,
+    },
+    disabledButton: {
+        justifyContent: 'center',
+        alignContent: 'center',
+        borderRadius: 14,
+        backgroundColor: '#5A7CF6',
+        boxShadow: '0px 4px 17.5px 0px',
+        width: 174,
+        height: 46,
+        opacity: 0.5 
     },
     pauseButton:{
         justifyContent: 'center',
