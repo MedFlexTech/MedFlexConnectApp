@@ -1,28 +1,77 @@
-import React from 'react';
-import { SafeAreaView, ScrollView, Image, Text, View, Pressable, StyleSheet } from 'react-native';
+import React, {useState} from 'react';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import Accordion from 'react-native-collapsible/Accordion';
+import { SafeAreaView, Button, ScrollView, Image, Text, View, Pressable, StyleSheet } from 'react-native';
 
 function HelpScreen(props) {
+
+    const [ activeSections, setActiveSections ] = useState([]);
+    const sections = [
+        {
+        title: 'Connect your device',
+        content: <Text style={styles.textSmall}>
+            Add information about connecting to a device here.
+        </Text>
+        },
+        {
+        title: 'Start your treatment',
+        content: <Text style={styles.textSmall}>
+            Add information here.
+        </Text>
+        },
+        {
+        title: 'Journaling',
+        content:  <><Text style={styles.textSmall}>Add information here.</Text>
+            <View style={styles.seperator}></View>
+        </>
+        },
+        {
+            title: 'Export treatment history',
+            content:  <><Text style={styles.textSmall}>Add information here.</Text>
+            <View style={styles.seperator}></View>
+            </>
+        },
+        {
+            title: 'About your privacy',
+            content:  <><Text style={styles.textSmall}>Add information here.</Text>
+            <View style={styles.seperator}></View>
+            </>
+        },
+    ];
+
+    function renderHeader(section, _, isActive) {
+        return (
+        <View style={styles.accordHeader}>
+            <Text style={styles.accordTitle}>{ section.title }</Text>
+            <Icon name={ isActive ? 'chevron-up' : 'chevron-down' }
+                size={20} color="#bbb" />
+        </View>
+        );
+    };
+
+    function renderContent(section, _, isActive) {
+        return (
+        <View style={styles.accordBody}>
+            {section.content}
+        </View>
+        );
+    }
+
     return (
         <ScrollView style={styles.container}>
             <View style={styles.heading}>
                 <Image source={require('../assets/Squiggles.jpg')} style={styles.squiggle}/>
                     <Text style={styles.greeting}>Help</Text>
             </View>
-            <Pressable style={styles.button} onPress={() => {/* logic to expand menu */}}>
-                <Text style={styles.buttonText}>Connect your device</Text>
-            </Pressable>
-            <Pressable style={styles.button} onPress={() => {/* logic to expand menu */}}>
-                <Text style={styles.buttonText}>Start your treatment</Text>
-            </Pressable>
-            <Pressable style={styles.button} onPress={{/* logic to expand menu */}}>
-                <Text style={styles.buttonText}>Journaling</Text>
-            </Pressable>
-            <Pressable style={styles.button} onPress={{/* logic to expand menu */}}>
-                <Text style={styles.buttonText}>Export treatment history</Text>
-            </Pressable>
-            <Pressable style={styles.button} onPress={{/* logic to expand menu */}}>
-                <Text style={styles.buttonText}>About your privacy</Text>
-            </Pressable>
+                <Accordion
+                align="bottom"
+                sections={sections}
+                activeSections={activeSections}
+                renderHeader={renderHeader}
+                renderContent={renderContent}
+                onChange={(sections) => setActiveSections(sections)}
+                sectionContainerStyle={styles.accordContainer}
+            />
     </ScrollView>
     );
 }
@@ -64,7 +113,27 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#5C80FC',
         fontFamily: 'Roboto', 
+    },
+      accordContainer: {
+        paddingBottom: 4
       },
+    accordHeader: {
+        padding: 12,
+        backgroundColor: '#666',
+        color: '#eee',
+        flex: 1,
+        flexDirection: 'row',
+        justifyContent:'space-between'
+    },
+    accordTitle: {
+        fontSize: 20,
+    },
+    accordBody: {
+        padding: 12
+    },
+    textSmall: {
+        fontSize: 16
+    },
   });
 
 export default HelpScreen;
