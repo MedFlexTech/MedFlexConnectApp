@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Text, StyleSheet, SafeAreaView, View, Pressable, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import BleService from '../services/BLEService.js';
 
 function HomeScreen(props) {
     const { navigate } = useNavigation();
@@ -25,6 +26,12 @@ function HomeScreen(props) {
         else{
             return "Good Morning"
         }
+    }
+
+    const getBattery = () => {
+        BleService.connectToDevice('DUO');
+
+        return BleService.readBattery();
     }
     return (
         

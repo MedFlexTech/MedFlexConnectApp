@@ -8,6 +8,7 @@ import { BottomTabNavigationOptions } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { RouteProp } from '@react-navigation/native';
+import { TimerProvider } from './frontend/services/TimerContext.js';
 
 import HomeScreen from "./frontend/screens/HomeScreen.js";
 import ProfileScreen from "./frontend/screens/ProfileScreen.js";
@@ -82,7 +83,9 @@ function App() {
 
   return (
     <NavigationContainer>
-      {user ? <TabGroup /> : <LoginScreen />}
+      <TimerProvider>
+        {user ? <TabGroup /> : <LoginScreen />}
+      </TimerProvider>
     </NavigationContainer>
   );
 }

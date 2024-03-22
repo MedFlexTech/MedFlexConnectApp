@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
-
+import { TimerProvider } from '../services/TimerContext.js';
 
 function StartTreatmentScreen(props) {
     {/*Display and format date for the title*/}
@@ -46,6 +46,31 @@ function StartTreatmentScreen(props) {
     }, []);
     
     const [isPlaying, setIsPlaying] = useState(false);
+    const changeIsPlaying = () => {
+        setIsPlaying(prev => !prev)
+    };
+    const [buttonState, setButtonState] = useState('Start');
+    const [buttonStyle, setButtonStyle] = useState(styles.startButton);
+    //handles changing state for the start/pause/resume button
+    const handlePress = () =>{
+        switch(buttonState){
+            case 'Start':
+                setButtonState('Pause');
+                setButtonStyle(styles.pauseButton);
+                break;
+            case 'Pause':
+                setButtonState('Resume');
+                setButtonStyle(styles.startButton);
+                break;
+            case 'Resume':
+                setButtonState('Pause');
+                setButtonStyle(styles.pauseButton);
+                break;
+            default:
+                break;
+        }
+    }
+
 
     return (
         <View style={styles.container}>
@@ -78,13 +103,21 @@ function StartTreatmentScreen(props) {
             </View>
             
             <View style={styles.centeredContainer}>
-                <Pressable style={styles.button} onPress={() => setIsPlaying(prev => !prev)}>
-                    <Text style={styles.text}>Start</Text>
+                <Pressable style={[buttonStyle]} onPress={() => {changeIsPlaying(); handlePress()}}>
+                    <Text style={styles.text}>{buttonState}</Text>
                 </Pressable>
             </View>
 
         </View>
     );
+}
+
+export default function WrappedStartTreatmentScreen(props){
+    return(
+        <TimerProvider>
+            <StartTreatmentScreen {...props} />
+        </TimerProvider>
+    )
 }
 
 const styles = StyleSheet.create({
@@ -93,11 +126,20 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
     },
 
-    button:{
+    startButton:{
         justifyContent: 'center',
         alignContent: 'center',
         borderRadius: 14,
         backgroundColor: '#5A7CF6',
+        boxShadow: '0px 4px 17.5px 0px',
+        width: 174,
+        height: 46,
+    },
+    pauseButton:{
+        justifyContent: 'center',
+        alignContent: 'center',
+        borderRadius: 14,
+        backgroundColor: '#999',
         boxShadow: '0px 4px 17.5px 0px',
         width: 174,
         height: 46,
@@ -147,5 +189,3 @@ const styles = StyleSheet.create({
     }
 
 });
-
-export default StartTreatmentScreen;
