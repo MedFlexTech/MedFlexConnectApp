@@ -3,6 +3,7 @@ import { Button, Text, StyleSheet, SafeAreaView, View, Pressable, Image } from '
 import { useNavigation } from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
+import { CountdownCircleTimer } from 'react-native-countdown-circle-timer';
 
 
 function StartTreatmentScreen(props) {
@@ -28,6 +29,7 @@ function StartTreatmentScreen(props) {
     
     const [boneMinutes, setBoneMinutes] = useState(null);
     const [muscleMinutes, setMuscleMinutes] = useState(null);
+    const [totalMinutes, setTotalMinutes] = useState(null);
     useEffect(() => {
         const getTime = async () => {
             const userDocument = await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').where('date', '==', getDate()).limit(1).get();
@@ -37,11 +39,14 @@ function StartTreatmentScreen(props) {
                 const muscleMinutes = treatmentData.muscleMinutes;
                 setBoneMinutes(boneMinutes);
                 setMuscleMinutes(muscleMinutes);
+                setTotalMinutes(boneMinutes + muscleMinutes);
             }
         }
         getTime()
     }, []);
     
+    const [isPlaying, setIsPlaying] = useState(false);
+
     return (
         <View style={styles.container}>
             <View style={styles.heading}>
@@ -51,6 +56,19 @@ function StartTreatmentScreen(props) {
             </View>
             <View>
                  {/*Timer here*/}
+              <CountdownCircleTimer
+              isPlaying = {isPlaying}
+              duration={totalMinutes * 60}
+              colors={['#004777', '#F7B801', '#A30000', '#A30000']}
+              colorsTime={[7, 5, 2, 0]}
+              updateInterval={1}
+              >
+                {({ remainingTime, color }) => (
+                    <Text>
+                        {Math.floor(remainingTime/60)}:{remainingTime % 60}
+                    </Text>
+                )}
+              </CountdownCircleTimer>
                 
             </View>
             <View> 
@@ -60,7 +78,7 @@ function StartTreatmentScreen(props) {
             </View>
             
             <View style={styles.centeredContainer}>
-                <Pressable style={styles.button}>
+                <Pressable style={styles.button} onPress={() => setIsPlaying(prev => !prev)}>
                     <Text style={styles.text}>Start</Text>
                 </Pressable>
             </View>
@@ -78,8 +96,6 @@ const styles = StyleSheet.create({
     button:{
         justifyContent: 'center',
         alignContent: 'center',
-        paddingVertical: 12,
-        paddingHorizontal: 32,
         borderRadius: 14,
         backgroundColor: '#5A7CF6',
         boxShadow: '0px 4px 17.5px 0px',
