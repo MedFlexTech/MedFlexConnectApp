@@ -22,8 +22,10 @@ function StartTreatmentScreen(props) {
         let date = new Date();
         let month = date.getMonth() + 1;
         let day = date.getDate();
+        const formattedMonth = String(month).padStart(2, '0');
+        const formattedDay = String(day).padStart(2, '0');
         let year = date.getFullYear();
-        return month + "-" + day + "-" + year;
+        return formattedMonth + "-" + formattedDay + "-" + year;
     }
 
     const [treatmentData, setTreatmentData] = useState(null);
@@ -32,12 +34,16 @@ function StartTreatmentScreen(props) {
     useEffect(() => {
         const getTime = async () => {
             const userDocument = await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').where('date', '==', getDate()).limit(1).get();
-            
+            console.log(getDate())
+            console.log(userDocument.empty);
             if (userDocument.empty) {
                 setTreatmentData(null); // Explicitly set to null for 'no treatments' case
             } else {
                 const data = userDocument.docs[0].data();
                 setTreatmentData(data);
+                let time = Number(data.boneMinutes) + Number(data.muscleMinutes);
+                setTotalMinutes(time)
+                console.log(treatmentData);
             }
             setIsLoading(false); // Data fetching complete
         }
@@ -85,7 +91,7 @@ function StartTreatmentScreen(props) {
                 </View>
             ) : treatmentData ? (
                 <View style={styles.centeredContainer}>
-                    <View>
+                    <View style={styles.timer}>
                         {/*Timer here*/}
                         <CountdownCircleTimer
                         isPlaying = {isPlaying}
@@ -95,16 +101,16 @@ function StartTreatmentScreen(props) {
                         updateInterval={1}
                         >
                             {({ remainingTime, color }) => (
-                                <Text>
-                                    {Math.floor(remainingTime/60)}:{remainingTime % 60}
+                                <Text style={styles.timeText}>
+                                    {String(Math.floor(remainingTime/60)).padStart(2, '0')}:{String(remainingTime % 60).padStart(2, '0')}
                                 </Text>
                             )}
                         </CountdownCircleTimer>
                     </View>
                     <View> 
                         {/*Display treatment info here*/}
-                        <Text>{`${treatmentData.boneMinutes} Minutes Bone Growth Stimulation`}</Text>
-                        <Text>{`${treatmentData.muscleMinutes} Minutes Muscle Stimulation`}</Text>
+                        <Text style={styles.treatmentText}>{`${treatmentData.boneMinutes} Minutes Bone Growth Stimulation`}</Text>
+                        <Text style={styles.treatmentText}>{`${treatmentData.muscleMinutes} Minutes Muscle Stimulation`}</Text>
                     </View>
                     <View style={styles.centeredContainer}>
                         <Pressable style={[buttonStyle]} onPress={() => {changeIsPlaying(); handlePress()}}>
@@ -137,6 +143,9 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fff",
     },
+    timer:{
+        paddingBottom: 25,
+    },
     startButton:{
         justifyContent: 'center',
         alignContent: 'center',
@@ -145,6 +154,14 @@ const styles = StyleSheet.create({
         boxShadow: '0px 4px 17.5px 0px',
         width: 174,
         height: 46,
+    },
+    treatmentText:{
+        marginBottom: 10,
+        fontSize: 16,
+    },
+    timeText:{
+        color: '#004777',
+        fontSize: 30
     },
     disabledButton: {
         justifyContent: 'center',
@@ -205,6 +222,7 @@ const styles = StyleSheet.create({
         fontSize: 20
     },
     centeredContainer:{
+        paddingTop: 50,
         justifyContent: 'center',
         alignItems: 'center',
     }
