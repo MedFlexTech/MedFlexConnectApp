@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Pressablen, StyleSheet} from 'react-native';
+import {View, Text, Pressablen, StyleSheet, ActivityIndicator} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from '@react-native-firebase/auth';
@@ -10,6 +10,7 @@ function CalendarScreen(props) {
   const [markedDates, setMarkedDates] = useState({});
   const [selectedDate, setSelectedDate] = useState('');
   const [treatmentInfo, setTreatmentInfo] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     prepareMarkedDates();
@@ -43,6 +44,25 @@ function CalendarScreen(props) {
       console.log('Error fetching treatment info:', error);
       setTreatmentInfo(null);
     }
+    /*setIsLoading(true);
+    try {
+      const treatmentDoc = await firestore()
+        .collection('treatments')
+        .doc(date)
+        .get();
+
+      if (treatmentDoc.exists) {
+        setTreatmentInfo(treatmentDoc.data());
+      } else {
+        setTreatmentInfo(null);
+      }
+    } catch (error) {
+      console.error("Error fetching treatment info: ", error);
+      setTreatmentInfo(null);
+    }
+    setIsLoading(false);
+  };*/
+
   };
 
 
@@ -91,6 +111,21 @@ function CalendarScreen(props) {
       ) : null}
 
     </View>
+    /*
+    <View style={{ flex: 1 }}>
+
+      {isLoading && <ActivityIndicator size="large" />}
+      {treatmentInfo ? (
+        <View style={styles.TreatmentContainer}>
+          <Text style={styles.TreatmentText}>Bone Minutes: {treatmentInfo.boneMinutes}</Text>
+        </View>
+      ) : selectedDate && !isLoading ? (
+        <View style={styles.TreatmentContainer}>
+          <Text style={styles.TreatmentText}>No Treatments Today</Text>
+        </View>
+      ) : null}
+    </View>
+    */
   );
 }
 
