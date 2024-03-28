@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {View, Text, Pressable} from 'react-native';
+import {View, Text, Pressablen, StyleSheet} from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import firestore from '@react-native-firebase/firestore';
 import { firebase } from '@react-native-firebase/auth';
@@ -68,7 +68,7 @@ function CalendarScreen(props) {
   };
 
   return (
-    <View>
+    <View style = {StyleSheet.container}>
       <Calendar
         onDayPress={onDayPress}
         markedDates={markedDates}
@@ -78,18 +78,47 @@ function CalendarScreen(props) {
         <Text>{selectedDate}</Text>
       )}
       {treatmentInfo ? (
-        <View>
+        <View style={styles.treatmentDetailsContainer}>
           <Text>Bone Minutes: {treatmentInfo.boneMinutes}</Text>
           <Text>Muscle Minutes: {treatmentInfo.muscleMinutes}</Text>
           <Text>Completed: {treatmentInfo.completed ? 'Yes' : 'No'}</Text>
           {/* ... display other treatment info as needed ... */}
         </View>
       ) : selectedDate ? (
-        <Text>No scheduled treatments</Text>
+        <View style={styles.TreatmentContainer}>
+          <Text style={styles.TreatmentText}>No Treatments Today</Text>
+        </View>
       ) : null}
 
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+
+  TreatmentContainer: {
+    backgroundColor: '#FFFFFF',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 50,
+    borderRadius: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  TreatmentText: {
+    color: '#000000',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  
+});
 
 export default CalendarScreen;
