@@ -17,33 +17,46 @@ function StartTreatmentScreen(props) {
         return month + " " + day + ", " + year;
     }
 
-    /*return date for database lookup*/
-    const getDate = () => {
-        let date = new Date();
-        let month = date.getMonth() + 1;
-        let day = date.getDate();
-        const formattedMonth = String(month).padStart(2, '0');
-        const formattedDay = String(day).padStart(2, '0');
-        let year = date.getFullYear();
-        return formattedMonth + "-" + formattedDay + "-" + year;
-    }
 
     const [treatmentData, setTreatmentData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [totalMinutes, setTotalMinutes] = useState(null);
+    const [docId, setDocId] = useState(null);
     useEffect(() => {
         const getTime = async () => {
-            const userDocument = await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').where('date', '==', getDate()).limit(1).get();
-            console.log(getDate())
-            console.log(userDocument.empty);
+            console.log("###")
+            
+            var today = new Date();
+            today.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0 to represent the beginning of the day
+
+            // Construct a Timestamp object for today's date
+            var startOfTodayTimestamp = firebase.firestore.Timestamp.fromDate(today);
+
+            // Construct a Timestamp object for the end of today (just before midnight)
+            var endOfTodayTimestamp = firebase.firestore.Timestamp.fromDate(new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999));
+            // actually returning the treatment
+            const userDocument = await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').where("date", ">=", startOfTodayTimestamp).where("date", "<=", endOfTodayTimestamp).limit(1).get();
+            
+            console.log(userDocument.empty + " <- user is empty");
             if (userDocument.empty) {
                 setTreatmentData(null); // Explicitly set to null for 'no treatments' case
-            } else {
+            } else{
+                const doc = userDocument.docs[0];
+                console.log(doc.id);
+                setDocId(doc.id); // Store the ID of the documen
                 const data = userDocument.docs[0].data();
-                setTreatmentData(data);
-                let time = Number(data.boneMinutes) + Number(data.muscleMinutes);
-                setTotalMinutes(time)
-                console.log(treatmentData);
+                console.log(docId);
+                if(data.inProgress == true){
+                    return;
+                }
+                else{
+                    console.log('here');
+                    console.log(data);
+                    setTreatmentData(data);
+                    let time = Number(data.boneMinutes) + Number(data.muscleMinutes);
+                    setTotalMinutes(time)
+                    console.log(treatmentData);
+                }
             }
             setIsLoading(false); // Data fetching complete
         }
@@ -58,6 +71,14 @@ function StartTreatmentScreen(props) {
     const [buttonState, setButtonState] = useState('Start');
     const [buttonStyle, setButtonStyle] = useState(styles.startButton);
     //handles changing state for the start/pause/resume button
+    const updateProgress = async () =>{
+        try{
+            await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').doc(docId).update({inProgress: true});
+        }
+        catch (e){
+            console.log(e);
+        }
+    }
     const handlePress = () =>{
         switch(buttonState){
             case 'Start':
@@ -120,7 +141,7 @@ function StartTreatmentScreen(props) {
                 </View>
             ): (
                 <View style={styles.centeredContainer}>
-                    <Text style={styles.noTreatmentsText}>No Treatments Today</Text>
+                    <Text style={styles.noTreatmentText}>No Treatments Today</Text>
                     <Pressable style={styles.disabledButton}> 
                         <Text style={styles.text}>Start</Text>
                     </Pressable>
@@ -158,6 +179,11 @@ const styles = StyleSheet.create({
     treatmentText:{
         marginBottom: 10,
         fontSize: 16,
+    },
+    noTreatmentText:{
+        marginTop: 50,
+        marginBottom: 150,
+        fontSize: 18,
     },
     timeText:{
         color: '#004777',

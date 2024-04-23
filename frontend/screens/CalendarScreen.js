@@ -19,18 +19,26 @@ function CalendarScreen(props) {
   const onDayPress = async (day) => {
     // Fetch treatment information for the selected date
     // Update treatment information display based on the selected date
-    const formattedMonth = String(day.month).padStart(2, '0');
-  const formattedDay = String(day.day).padStart(2, '0');
-    const formattedDate = `${formattedMonth}-${formattedDay}-${day.year}`;
-    setSelectedDate(formattedDate);
-    await fetchTreatmentInfo(formattedDate);
+    console.log('day', day)
+    setSelectedDate(day.dateString);
+    let today = new Date(day.dateString)
+    console.log('today', today);
+    today.setHours(0, 0, 0, 0); // Set hours, minutes, seconds, and milliseconds to 0 to represent the beginning of the day
+
+    // Construct a Timestamp object for today's date
+    var startOfTodayTimestamp = firebase.firestore.Timestamp.fromDate(today);
+
+    // Construct a Timestamp object for the end of today (just before midnight)
+    var endOfTodayTimestamp = firebase.firestore.Timestamp.fromDate(new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59, 999));
+            // actually returning the treatment            
+    await fetchTreatmentInfo(startOfTodayTimestamp, endOfTodayTimestamp);
   };
 
-  const fetchTreatmentInfo = async (date) => {
+  const fetchTreatmentInfo = async (start, end) => {
     try {
-      console.log(date);
+      console.log(start, end);
       // Fetch treatment info based on the selected date
-      const treatmentCollection = await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').where('date', '==', date).get();
+      const treatmentCollection = await firestore().collection('users').doc(firebase.auth().currentUser.uid).collection('treatments').where("date", ">=", start).where("date", "<=", end).limit(1).get();
 
       const treatments = treatmentCollection.docs.map(doc => doc.data());
       console.log(treatments);
@@ -74,8 +82,12 @@ function CalendarScreen(props) {
 
     treatmentCollection.forEach((doc) =>{
       const data = doc.data();
-      const dateParts = data.date.split('-'); // splits the date into [mm, dd, yyyy]
-      const dateKey = `${dateParts[2]}-${dateParts[0]}-${dateParts[1]}`;
+     //const dateParts = data.date.split('-'); // splits the date into [mm, dd, yyyy]
+    
+      let dateKey = data.date.toDate();
+      console.log(dateKey);
+      dateKey = dateKey.toISOString().split('T')[0]
+      console.log(dateKey);
       const completedStatus = data.completed ? 'green':'red';
 
       newMarkedDates[dateKey]={
@@ -83,7 +95,7 @@ function CalendarScreen(props) {
         dotColor: completedStatus,
       };
     })
-    console.log(newMarkedDates);
+    console.log('Marked dates: ', newMarkedDates);
     setMarkedDates(newMarkedDates);
   };
 

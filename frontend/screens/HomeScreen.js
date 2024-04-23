@@ -66,24 +66,26 @@ function HomeScreen(props) {
                     <Text style={styles.date}>{getCurrentDate()}</Text>
             </View>
            <View style={styles.statusBox}>
-                <Text>Device Status</Text>
+                <Text style = {styles.statusTitle}>Device Status</Text>
                 {/*Determine if device is connected here*/}
-                <Text>{deviceStatus}</Text>
-                <Text>{batteryStatus}</Text>
+                <View style={styles.statusAlign}>
+                    <Text style = {styles.statusText}>{deviceStatus}</Text>
+                    <Text style = {styles.statusText}>{batteryStatus}</Text>
+                </View>
             </View>
 
             <View>
                 <Pressable style={styles.button} onPress={() => navigate('StartTreatment')}>
-                    <Text>Start Treatment</Text>
+                    <Text style={styles.buttonText}>Start Treatment</Text>
                 </Pressable>
                 <Pressable style={styles.button} onPress={() => navigate('Calendar')}>
-                    <Text>Calendar</Text>
+                    <Text style={styles.buttonText}>Calendar</Text>
                 </Pressable>
                 <Pressable style={styles.button} onPress={() => navigate('Journal')}>
-                    <Text>Journal</Text>
+                    <Text style={styles.buttonText}>Journal</Text>
                 </Pressable>
                 <Pressable style={styles.button} onPress={() => navigate('History')}>
-                    <Text>History</Text>
+                    <Text style={styles.buttonText}>History</Text>
                 </Pressable>
             </View>
             
@@ -114,6 +116,9 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         elevation: 3, // For Android shadow
         shadowOpacity: 0.1, // For iOS shadow
+    },
+    buttonText:{
+        fontSize: 18,
     },
     squiggle:{
         position: 'absolute',
@@ -147,7 +152,20 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         shadowOffset: {width: 0, height: 4},
         shadowOpacity: 0.25,
-
+    },
+    statusTitle:{
+        color: 'white',
+        paddingLeft: '5%',
+        paddingTop: '3%',
+        paddingBottom: '1%',
+        fontSize: 16
+    },
+    statusText:{
+        color: 'white',
+        paddingLeft: '5%',
+    },
+    statusAlign:{
+        display: 'inline',
     }
 });
 
