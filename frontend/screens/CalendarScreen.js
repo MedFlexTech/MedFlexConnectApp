@@ -99,6 +99,12 @@ function CalendarScreen(props) {
     setMarkedDates(newMarkedDates);
   };
 
+  const formatDate = (dateString) =>{
+    let theDate = dateString.split('-');
+
+    return theDate[1] + "/" + theDate[2] + "/" + theDate[0];
+  }
+
   return (
     <View style = {StyleSheet.container}>
       <Calendar
@@ -107,13 +113,15 @@ function CalendarScreen(props) {
         // Additional styling and configuration props
       />
       {selectedDate && (
-        <Text>{selectedDate}</Text>
+        <View style={styles.TreatmentContainer}>
+          <Text style={styles.selectedDate}>{formatDate(selectedDate)}</Text>
+        </View>  
       )}
       {treatmentInfo ? (
-        <View style={styles.treatmentDetailsContainer}>
-          <Text>Bone Minutes: {treatmentInfo.boneMinutes}</Text>
-          <Text>Muscle Minutes: {treatmentInfo.muscleMinutes}</Text>
-          <Text>Completed: {treatmentInfo.completed ? 'Yes' : 'No'}</Text>
+        <View style={styles.TreatmentContainer}>
+          <Text style={styles.TreatmentText}>Bone Minutes: {treatmentInfo.boneMinutes}</Text>
+          <Text style={styles.TreatmentText}>Muscle Minutes: {treatmentInfo.muscleMinutes}</Text>
+          <Text style={styles.TreatmentText}>{treatmentInfo.completed ? 'Complete' : 'Incomplete'}</Text>
           {/* ... display other treatment info as needed ... */}
         </View>
       ) : selectedDate ? (
@@ -159,13 +167,17 @@ const styles = StyleSheet.create({
     elevation: 5,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 10
   },
   TreatmentText: {
     color: '#000000',
     fontSize: 16,
-    fontWeight: 'bold',
   },
-  
+  selectedDate:{
+    color: '#000000',
+    fontSize: 20,
+    justifyContent: 'center'
+  }
 });
 
 export default CalendarScreen;
