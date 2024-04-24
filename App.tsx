@@ -18,7 +18,7 @@ import CalendarScreen from './frontend/screens/CalendarScreen.js';
 import JournalScreen from './frontend/screens/JournalScreen.js';
 import HistoryScreen from './frontend/screens/HistoryScreen.js';
 import LoginScreen from './frontend/screens/LoginScreen.js';
-
+import ChangePasswordScreen from './frontend/screens/ChangePasswordScreen.js';
 // Tab Bottom
 const Tab = createBottomTabNavigator();
 
@@ -26,6 +26,7 @@ const HomeStack = createNativeStackNavigator();
 
 function HomeStackGroup(){
   return(
+    <TimerProvider>
       <HomeStack.Navigator
           screenOptions={{headerShown: false}}>
           <HomeStack.Screen name="Home" component={HomeScreen}/>
@@ -33,7 +34,9 @@ function HomeStackGroup(){
           <HomeStack.Screen name="Calendar" component={CalendarScreen}/>
           <HomeStack.Screen name="Journal" component={JournalScreen}/>
           <HomeStack.Screen name="History" component={HistoryScreen}/>
+          <HomeStack.Screen name="ChangePassword" component={ChangePasswordScreen}/>
       </HomeStack.Navigator>
+      </TimerProvider>
   )
 }
 

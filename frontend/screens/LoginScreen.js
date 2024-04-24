@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import auth from '@react-native-firebase/auth'; // Import the auth module
+import firestore from '@react-native-firebase/firestore';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
   const [email, setEmail] = useState(''); // Updated to 'email' for clarity
   const [password, setPassword] = useState('');
+  const { navigate } = useNavigation();
 
   const handleLogin = () => {
     // Use Firebase authentication to sign in with email and password
     auth()
       .signInWithEmailAndPassword(email, password)
-      .then(() => {
+      .then((response) => {
         // Login successful
-        Alert.alert('Logged in!', 'You are logged in successfully.');
+        const uid = response.user.uid;
+        firestore().collection('users').doc(uid).get().then(documentSnapshot => {
+          if(documentSnapshot.exists){
+            const userData = documentSnapshot.data();
+            if(userData.passwordFlag === 0){
+              Alert.alert('Change Password', 'Please change your password.', [
+                { text: 'OK', onPress: () => navigate('ChangePassword', { uid: uid }) }
+              ]);
+            }
+            else{
+              Alert.alert('Logged in!', 'You are logged in successfully.');
+            }
+          }
+        })
       })
       .catch(error => {
         // Handle errors here
