@@ -64,7 +64,7 @@ function JournalScreen(props) {
                 comments,
                 createdAt: firestore.FieldValue.serverTimestamp(),
               });
-        // Reset the form or navigate away after submission
+        // Reset the form after submission
         clearForm();
         } catch (error) {
         console.error(error);
@@ -84,35 +84,46 @@ function JournalScreen(props) {
                     <Text style={styles.greeting}>Today's Treatment</Text>
                     <Text style={styles.date}>{getCurrentDate()}</Text>
             </View>
-            <View>
-                <Text>How are you feeling?</Text>
+            <View style={styles.content}>
+                <Text>How are you feeling? (0: Terrible - 10: Amazing)</Text>
+                <View style={styles.centeredContainer}>
+                    <Text>{feeling}</Text>
+                </View>
                 <Slider
                     minimumValue={1}
                     maximumValue={10}
                     step={1}
                     value={feeling}
                     onValueChange={setFeeling}
+                    minimumTrackTintColor={'#5A7CF6'}
+                    maximumTrackTintColor={'#9F9FA0'}
+                    thumbTintColor={'#5A7CF6'}
                 />
             </View>
-            <View> 
-                <Text>How is the pain level of your injury?</Text>
+            <View style={styles.content}> 
+                <Text>How is the pain level of your injury? (0: No Pain - 10: Extreme Pain)</Text>
+                <View style={styles.centeredContainer}>
+                    <Text>{painLevel}</Text>
+                </View>
                 <Slider
                     minimumValue={1}
                     maximumValue={10}
                     step={1}
                     value={painLevel}
                     onValueChange={setPainLevel}
+                    minimumTrackTintColor={'#5A7CF6'}
+                    maximumTrackTintColor={'#9F9FA0'}
+                    thumbTintColor={'#5A7CF6'}
                 />
             </View>
-            <View>
+            <View style={styles.content}>
                 <Text>Other comments for your prescriber</Text>
-                <TextInput
+                <TextInput style={styles.textInput}
                 multiline
                 placeholder="Type your response here..."
                 value={comments}
                 onChangeText={setComments}
                 />
-
             </View>
             
             <View style={styles.twoButtons}>
@@ -133,11 +144,18 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#fff",
     },
-
+    content: {
+        marginTop: '2%',
+        marginLeft: '5%',
+        marginRight: '5%',
+    },
     twoButtons:{
         flexDirection: 'row',
         justifyContent: 'space-evenly',
         padding: 10
+    },
+    values:{
+       justifyContent: "center"
     },
     submit:{
         justifyContent: 'center',
@@ -152,7 +170,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignContent: 'center',
         borderRadius: 14,
-        backgroundColor: '#999',
+        backgroundColor: '#9F9FA0',
         boxShadow: '0px 4px 17.5px 0px',
         width: 134,
         height: 46,
@@ -199,7 +217,17 @@ const styles = StyleSheet.create({
     centeredContainer:{
         justifyContent: 'center',
         alignItems: 'center',
-    }
+    },
+    textInput: {
+        borderWidth: 1,
+        borderColor: '#5A7CF6',
+        borderRadius: 10,
+        width: '100%',
+        minHeight: 100,
+        padding: 10,
+        marginTop: 10,
+        textAlignVertical: 'top',
+    },
 
 });
 

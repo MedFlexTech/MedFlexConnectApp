@@ -63,6 +63,7 @@ function HelpScreen(props) {
                 <Image source={require('../assets/Squiggles.jpg')} style={styles.squiggle}/>
                     <Text style={styles.greeting}>Help</Text>
             </View>
+            <View style={styles.content}>
                 <Accordion
                 align="bottom"
                 sections={sections}
@@ -72,6 +73,7 @@ function HelpScreen(props) {
                 onChange={(sections) => setActiveSections(sections)}
                 sectionContainerStyle={styles.accordContainer}
             />
+            </View>
     </ScrollView>
     );
 }
@@ -114,12 +116,16 @@ const styles = StyleSheet.create({
         color: '#5C80FC',
         fontFamily: 'Roboto', 
     },
-      accordContainer: {
-        paddingBottom: 4
-      },
+    content: {
+        marginTop: '7%'
+    },
+
+    accordContainer: {
+        paddingBottom: 4,
+    },
     accordHeader: {
-        padding: 12,
-        backgroundColor: '#666',
+        padding: 14,
+        backgroundColor: '#FFF',
         color: '#eee',
         flex: 1,
         flexDirection: 'row',

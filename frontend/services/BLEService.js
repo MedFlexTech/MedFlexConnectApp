@@ -35,6 +35,7 @@ class BLEService{
             const device = await manager.connectToDevice(deviceName);
             console.log('Connected to device:', device.name);
             // Interact with the connected device
+            return true;
         } catch (error) {
             console.error('Error connecting to device:', error);
         }

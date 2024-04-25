@@ -38,25 +38,26 @@ function HomeScreen(props) {
         }
     }
 
-    const getBattery =  async () => {
-        let result = '';
-        try{
-            await BleService.connectToDevice('DUO');
-        }
-        catch(error){
-            console.log(error);
-            return;
-        }
-        setDeviceStatus('Connected');
-        try{
-            let battery = await BleService.readBattery();
-        }
-        catch(error){
-            console.log(error);
-            return;
-        }
-        setBatteryStatus(battery);
-    }
+    //No battery circuit
+    // const getBattery =  async () => {
+    //     let result = '';
+    //     try{
+    //         await BleService.connectToDevice('DUO');
+    //     }
+    //     catch(error){
+    //         console.log(error);
+    //         return;
+    //     }
+    //     setDeviceStatus('Connected');
+    //     try{
+    //         let battery = await BleService.readBattery();
+    //     }
+    //     catch(error){
+    //         console.log(error);
+    //         return;
+    //     }
+    //     setBatteryStatus(battery);
+    // }
     return (
         
         <View style={styles.container}>
@@ -70,7 +71,7 @@ function HomeScreen(props) {
                 {/*Determine if device is connected here*/}
                 <View style={styles.statusAlign}>
                     <Text style = {styles.statusText}>{deviceStatus}</Text>
-                    <Text style = {styles.statusText}>{batteryStatus}</Text>
+                    {/* <Text style = {styles.statusText}>{batteryStatus}</Text> */}
                 </View>
             </View>
 
