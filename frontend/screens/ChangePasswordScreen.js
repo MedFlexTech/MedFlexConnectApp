@@ -4,42 +4,61 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import { useNavigation } from '@react-navigation/native';
 
-const ChangePasswordScreen = ({ route, navigation }) => {
-    const { navigate } = useNavigation();
+const ChangePasswordScreen = ({ route }) => {
+  const navigation = useNavigation();
+  const { uid } = route.params;
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
-    const { uid } = route.params;
-    const [newPassword, setNewPassword] = useState('');
+  const handleChangePassword = () => {
+    if (!newPassword || newPassword.length < 6) {
+      Alert.alert('Validation Error', 'Password must be at least 6 characters long.');
+      return;
+    }
 
-    const handleChangePassword = () => {
-        const user = auth().currentUser;
-        
-        user.updatePassword(newPassword).then(() => {
-          // Update successful, update passwordFlag in Firestore
-          firestore().collection('users').doc(uid).update({ passwordFlag: 1 })
-            .then(() => {
-              Alert.alert('Password Updated', 'Your password has been updated successfully.');
-              navigation.goBack(); // Navigate back or to another part of your app
-            })
-            .catch(error => {
-              Alert.alert('Firestore Update Failed', error.message);
-            });
-        }).catch(error => {
-          // An error happened or reauthentication may be needed
-          if (error.code === 'auth/requires-recent-login') {
-            Alert.alert('Reauthentication Required', 'Please log out and log in again to update your password.');
-          } else {
-            Alert.alert('Update Failed', error.message);
-          }
+    if (newPassword !== confirmPassword) {
+      Alert.alert('Validation Error', 'Passwords do not match.');
+      return;
+    }
+
+    const user = auth().currentUser;
+    
+    user.updatePassword(newPassword).then(() => {
+      // Update successful, update passwordFlag in Firestore
+      firestore().collection('users').doc(uid).update({ passwordFlag: 1 })
+        .then(() => {
+          Alert.alert('Password Updated', 'Your password has been updated successfully.');
+          navigation.goBack(); // Navigate back or to another part of your app
+        })
+        .catch(error => {
+          Alert.alert('Firestore Update Failed', error.message);
         });
-      };
+    }).catch(error => {
+      // Handle errors like password complexity or reauthentication needed
+      let errorMessage = 'Failed to update password. Please try again.';
+      if (error.code === 'auth/weak-password') {
+        errorMessage = 'Password is too weak. Choose a stronger password.';
+      } else if (error.code === 'auth/requires-recent-login') {
+        errorMessage = 'Reauthentication required. Please log out and log in again to update your password.';
+      }
+      Alert.alert('Update Failed', errorMessage);
+    });
+  };
 
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
-        placeholder="Enter New Password"
+        placeholder="New Password"
         value={newPassword}
         onChangeText={setNewPassword}
+        secureTextEntry
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Confirm New Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
         secureTextEntry
       />
       <Button title="Change Password" onPress={handleChangePassword} />

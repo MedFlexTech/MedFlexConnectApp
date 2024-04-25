@@ -5,12 +5,16 @@ import firestore from '@react-native-firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
-  const [email, setEmail] = useState(''); // Updated to 'email' for clarity
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { navigate } = useNavigation();
 
   const handleLogin = () => {
-    // Use Firebase authentication to sign in with email and password
+    if (!email || !password) {
+      Alert.alert('Validation Failed', 'Please enter both email and password.');
+      return;
+    }
+
     auth()
       .signInWithEmailAndPassword(email, password)
       .then((response) => {
@@ -25,15 +29,33 @@ const LoginScreen = () => {
               ]);
             }
             else{
+              navigate('HomeScreen');
               Alert.alert('Logged in!', 'You are logged in successfully.');
             }
+          } else {
+            Alert.alert('No User Data', 'No user data found.');
           }
         })
       })
       .catch(error => {
-        // Handle errors here
-        const { code, message } = error;
-        Alert.alert('Login failed!', message);
+        let errorMessage = '';
+        switch (error.code) {
+          case 'auth/invalid-email':
+            errorMessage = 'The email address is invalid.';
+            break;
+          case 'auth/user-disabled':
+            errorMessage = 'The user corresponding to the given email has been disabled.';
+            break;
+          case 'auth/user-not-found':
+            errorMessage = 'There is no user corresponding to the given email.';
+            break;
+          case 'auth/wrong-password':
+            errorMessage = 'The password is invalid for the given email, or the account corresponding to the email does not have a password set.';
+            break;
+          default:
+            errorMessage = 'An unexpected error occurred. Please try again.';
+        }
+        Alert.alert('Login failed!', errorMessage);
       });
   };
 
@@ -44,8 +66,8 @@ const LoginScreen = () => {
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
-        autoCapitalize="none" // Ensures email is entered in lower case
-        keyboardType="email-address" // Provides a suitable keyboard for email input
+        autoCapitalize="none"
+        keyboardType="email-address"
       />
       <TextInput
         style={styles.input}
@@ -58,7 +80,6 @@ const LoginScreen = () => {
     </View>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
