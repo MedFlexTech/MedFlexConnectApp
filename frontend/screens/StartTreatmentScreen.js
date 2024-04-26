@@ -62,6 +62,51 @@ function StartTreatmentScreen(props) {
         }
         getTime()
     }, []);
+
+    // useEffect(() => {
+    //     let isMounted = true; // Flag to check if component is still mounted
+    //     const getTime = async () => {
+    //       try {
+    //         var today = new Date();
+    //         today.setHours(0, 0, 0, 0);
+      
+    //         var startOfTodayTimestamp = firebase.firestore.Timestamp.fromDate(today);
+    //         var endOfTodayTimestamp = new Date(today);
+    //         endOfTodayTimestamp.setHours(23, 59, 59, 999);
+      
+    //         const userDocument = await firestore()
+    //           .collection('users')
+    //           .doc(firebase.auth().currentUser.uid)
+    //           .collection('treatments')
+    //           .where("date", ">=", startOfTodayTimestamp)
+    //           .where("date", "<=", endOfTodayTimestamp)
+    //           .limit(1)
+    //           .get();
+      
+    //         if (!userDocument.empty && isMounted) {
+    //           const doc = userDocument.docs[0];
+    //           const data = doc.data();
+    //           if (!data.inProgress) {
+    //             setDocId(doc.id);
+    //             setTreatmentData(data);
+    //             setTotalMinutes(data.boneMinutes + data.muscleMinutes);
+    //           }
+    //         }
+    //       } catch (error) {
+    //         console.error("Failed to fetch treatment data: ", error);
+    //         Alert.alert('Error', 'Failed to fetch treatment data.');
+    //       } finally {
+    //         if (isMounted) {
+    //           setIsLoading(false);
+    //         }
+    //       }
+    //     };
+    //     getTime();
+      
+    //     return () => {
+    //       isMounted = false; // Set flag to false when component unmounts
+    //     }
+    //   }, []);      
     
     //Timer states
     const [isPlaying, setIsPlaying] = useState(false);
