@@ -2,9 +2,11 @@ import React, {useState, useEffect} from 'react';
 import { SafeAreaView, Image, Text, View, StyleSheet, Pressable, ScrollView } from 'react-native';
 import firestore from '@react-native-firebase/firestore';
 import auth, { firebase } from '@react-native-firebase/auth';
+import { useNavigation } from '@react-navigation/native';
+
 
 function ProfileScreen(props) {
-
+    const {navigate} = useNavigation();
     const [userProfile, setUserProfile] = useState({
         name: '',
         email: '',
@@ -43,7 +45,7 @@ function ProfileScreen(props) {
       <Pressable style={styles.button} onPress={() => {/* logic to export data */}}>
         <Text style={styles.buttonText}>Export Data</Text>
       </Pressable>
-      <Pressable style={styles.button} onPress={() => {/* logic to change password */}}>
+      <Pressable style={styles.button} onPress={() => {navigate('ChangePassword', { uid: firebase.auth().currentUser.uid })}}>
         <Text style={styles.buttonText}>Change Password</Text>
       </Pressable>
       <Pressable style={styles.button} onPress={() => auth().signOut()}>
