@@ -50,13 +50,14 @@ function HistoryScreen(props) {
                     <Text style={styles.greeting}>History</Text>
                     <Text style={styles.date}>{getCurrentDate()}</Text>
             </View>
-            <View>
+            <View style={styles.treatmentContainer}>
                 <Text>Treatments</Text>
                 {series.length > 0 ? (
                     <View>
                 <Text>Treatments Completed: {series[0]}</Text>
                 <Text>Treatments Missed: {series[1]}</Text>
                 <Text>Treatments Remaining: {series[2]}</Text>
+                <View style={styles.centered}>
                 <PieChart
             widthAndHeight={widthAndHeight}
             series={series}
@@ -65,10 +66,11 @@ function HistoryScreen(props) {
             coverFill={'#FFF'}
           />
           </View>
+          </View>
           ): (<Text>No treatments yet</Text>)}
             </View>
             <View>
-                <Text>Statistics</Text>
+                {/* <Text>Statistics</Text> */}
             </View>
     </ScrollView>
     );
@@ -107,6 +109,30 @@ const styles = StyleSheet.create({
         fontWeight: '500',
         color: '#5C80FC',
         fontFamily: 'Roboto', 
+      },
+      centered:{
+        justifyContent: 'center',
+        alignContent: 'center',
+        alignItems: 'center'
+      },
+      treatmentContainer: {
+        backgroundColor: '#FFFFFF',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        marginHorizontal: 50,
+        borderRadius: 20,
+        shadowColor: "#000",
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 10,
+        margin: 10
       },
   });
 
